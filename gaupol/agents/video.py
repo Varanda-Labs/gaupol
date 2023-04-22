@@ -120,14 +120,15 @@ class VideoAgent(aeidon.Delegate):
 
         self.seekbar.set_draw_value(False)
         self.seekbar.connect("change-value", self._on_seekbar_change_value)
-        self.connect("request-set-seekbar", self.on_req_set_seekbar)
+        #self.connect("request-seek", self.on_req_seek)
+        aeidon.util.connect(self, "wavev", "request-seek")
         item = Gtk.ToolItem()
         item.set_expand(True)
         item.add(self.seekbar)
         self.player_toolbar.insert(item, -1)
     
-    def on_req_set_seekbar(self, widget, pos):
-        print("on_req_set_seekbar: " + str(pos))
+    def on_req_seek(self, widget, pos):
+        print("on_req_seek: " + str(pos))
         self.player.seek(pos)
 
     def _init_player_widgets(self):

@@ -69,12 +69,23 @@ THEMES = { \
     } \
 }
 
+class Dispatcher(aeidon.Observable):
+    signals = (
+        "request-seek",
+    )
+    def __init__(self):
+        aeidon.Observable.__init__(self)
+    
+    def request_seek(self, pos):
+        self.emit("request-seek", pos)
+
+
 
 class GraphicArea(Gtk.DrawingArea):
     """ This class is a Drawing Area"""
-    def __init__(self, parent):
+    def __init__(self, dispatcher):
         super(GraphicArea,self).__init__()
-        self.parent = parent
+        self.dispatcher = dispatcher
         self.spam_in_samples = DISP_SPAM_IN_SAMPLES
         self.set_theme('dark')
 
@@ -162,7 +173,8 @@ class GraphicArea(Gtk.DrawingArea):
     @aeidon.deco.export
     def on_left_click(self, x,y):
         print("left-click event " + str(x) + ", " + str(y))
-        self.parent.emit("request-set-seekbar", 0.5)
+        #self.parent.emit("request-set-seekbar", 5.0)
+        self.dispatcher.request_seek(0.333)
 
     def on_right_click(self, x,y):
         print("right-click event " + str(x) + ", " + str(y))
@@ -315,8 +327,9 @@ class Waveview():
     """ This class is a Drawing Area"""
     def __init__(self, parent):
         super(Waveview,self).__init__()
-        self.parent = parent
-        self.graphic_area = GraphicArea(parent)
+        #self.parent = parent
+        self.dispatcher = Dispatcher()
+        self.graphic_area = GraphicArea(self.dispatcher)
         #self.graphic_area.set_size_request(0, 100)
         self.top_container = Gtk.HBox(spacing=6)
         self.top_container.set_homogeneous(True)
